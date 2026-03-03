@@ -11,9 +11,43 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
+const todoExpr = new RegExp('// TODO.*', 'g')
 
+const metaExpr = /TODO (.*); (.*); (.*)/
+function parseFile(files) {
+    for (let cFile of files){
+        cFile = cFile.split("\n");
+        for (let line of cFile){
+            let item = {}
+            if (line.match(todoExpr, )) {
+                if (line.match(metaExpr)) {
+                    const {name, date, text } = line.match(todoExpr);
+                    item = {
+                        "text": text,
+                        "important":  (text.match(/!/g) || []).length,
+                        "user": name,
+                        "date" : formatDate(date),
+                    }
+                }
+                else {
+                    item = {
+                        "text": line,
+                        "important":  /!/.test(line),
+                        "user": undefined,
+                        "date" : undefined,
+                    }
+                }
+                todos.push(item)
+            }
+        }
+    }
+
+}
 
 function processCommand(command) {
+    parseFile(files);
+    switch (command) {
+        case 'exit':
     switch (true){
         case /exit/.test(command):
             process.exit(0);
@@ -48,7 +82,6 @@ function processCommand(command) {
         default:
             console.log('wrong command');
             break;
-
     }
     // switch (command) {
     //     case 'exit':
@@ -83,4 +116,14 @@ function showTodosByUsername(username){
         .map(item => item.text)
     );
 }
+
 // TODO you can do it!
+
+function formatDate (date) {
+    const [day, month, year]= [date.getDate(), date.getMonth() + 1, date.getFullYear()];
+
+    const dayFormat = String(day).padStart(2, '0')
+    const monthFormat = String(month).padStart(2, '0')
+
+    return `${dayFormat}-${monthFormat}-${year}`;
+}
