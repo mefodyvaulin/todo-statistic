@@ -98,6 +98,7 @@ function processCommand(command) {
     //         break;
     // }
 }
+}
 
 function showAllTodos(){
     console.log(todos.map(item => item.text));
@@ -117,8 +118,6 @@ function showTodosByUsername(username){
     );
 }
 
-// TODO you can do it!
-
 function formatDate (date) {
     const [day, month, year]= [date.getDate(), date.getMonth() + 1, date.getFullYear()];
 
@@ -126,4 +125,25 @@ function formatDate (date) {
     const monthFormat = String(month).padStart(2, '0')
 
     return `${dayFormat}-${monthFormat}-${year}`;
+}
+
+function showTodosSortedByImportance(){
+    const copy = todos.slice();
+    console.log(copy
+        .sort((a, b) => a.importance > b.importance)
+        .map(item => item.text));
+}
+
+function showTodosSortedByUser(){
+    const copy = todos.slice();
+    console.log(copy
+        .sort((a, b) => a.username < b.username)
+        .map(item => item.text));
+}
+
+function showTodosSortedByDate(){
+    const copy = todos.slice();
+    console.log(copy
+        .sort((a, b) => a.date < b.date)
+        .map(item => item.text));
 }
