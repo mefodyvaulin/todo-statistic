@@ -11,23 +11,24 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
-const todoExpr = new RegExp('.;?// TODO.*', 'g')
+const metaExpr = /\s*\/\/ TODO /;
 
-const metaExpr = new RegExp('.;?// TODO (.+); (.+); (.+)', 'g')
+
 function parseFile(files) {
     for (let cFile of files){
         cFile = cFile.split("\n");
         for (let line of cFile){
-
+            console.log(line);
             let item = {}
-            if (line.match(todoExpr)) {
-                if (line.match(metaExpr)) {
-                    let lineParse = line.split(";")
+            if (metaExpr.test(line)) {
+                let countOf = line.split('// TODO')[1].toString();
+                if (countOf.indexOf(';') !== -1) {
+                    let lineParse = line.split(";");
                     let name = lineParse[1].split(" ")[3];
                     let date = lineParse[2];
                     let text = lineParse.slice(3).join(';')
-
                     let countExclamationMark = (text.match(/!/g) || []).length
+
                     item = {
                         "textTODO": text,
                         "important": countExclamationMark ,
@@ -88,24 +89,10 @@ function processCommand(command) {
             console.log('wrong command');
             break;
     }
-    // switch (command) {
-    //     case 'exit':
-    //         process.exit(0);
-    //         break;
-    //     case 'show':
-    //         showAllTodos();
-    //         break;
-    //     case 'important':
-    //         showImportantTodos();
-    //         break;
-    //     default:
-    //         console.log('wrong command');
-    //         break;
-
 }
 
 function showAllTodos(){
-
+    console.log(todos);
     console.log(todos.map(item => item["textTODO"]));
 }
 
