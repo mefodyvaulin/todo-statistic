@@ -4,6 +4,9 @@ const {readLine} = require('./console');
 const files = getFiles();
 const todos = [];
 console.log('Please, write your command!');
+
+
+
 readLine(processCommand);
 
 function getFiles() {
@@ -11,35 +14,35 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
-const metaExpr = /\s*\/\/ TODO /;
+const metaExpr = /\s*\/\/ TODO .*/;
 
 
 function parseFile(files) {
     for (let cFile of files){
         cFile = cFile.split("\n");
         for (let line of cFile){
-            console.log(line);
             let item = {}
             if (metaExpr.test(line)) {
-                let countOf = line.split('// TODO')[1].toString();
+                let countOf = line.split('// TODO')[1];
                 if (countOf.indexOf(';') !== -1) {
-                    let lineParse = line.split(";");
-                    let name = lineParse[1].split(" ")[3];
-                    let date = lineParse[2];
-                    let text = lineParse.slice(3).join(';')
+
+                    let lineParse = countOf.split(";");
+                    let name = lineParse[0];
+                    let date = lineParse[1];
+                    let text = lineParse[2]
                     let countExclamationMark = (text.match(/!/g) || []).length
 
                     item = {
-                        "textTODO": text,
+                        "textTODO": text.slice(1),
                         "important": countExclamationMark ,
-                        "user": name,
+                        "user": name.slice(1),
                         "date" : formatDate(date),
                     }
                 }
                 else {
                     item = {
                         "textTODO": line.split("// TODO")[1],
-                        "important":  /!/.test(line),
+                        "important":  (line.match(/!/g) || []).length,
                         "user": '',
                         "date" : undefined,
                     }
@@ -54,7 +57,7 @@ function parseFile(files) {
 
 function processCommand(command) {
     parseFile(files);
-    switch (true){
+    switch (true) {
         case /exit/.test(command):
             process.exit(0);
             break;
@@ -70,7 +73,7 @@ function processCommand(command) {
             break;
         case /sort .*/.test(command):
             let subcommand = command.slice(5);
-            switch(subcommand){
+            switch (subcommand) {
                 case 'importance':
                     showTodosSortedByImportance();
                     break;
@@ -88,11 +91,11 @@ function processCommand(command) {
         default:
             console.log('wrong command');
             break;
+
     }
 }
 
 function showAllTodos(){
-    console.log(todos);
     console.log(todos.map(item => item["textTODO"]));
 }
 
@@ -105,7 +108,7 @@ function showImportantTodos(){
 
 function showTodosByUsername(username){
     console.log(todos
-        .filter(item => item.user == username)
+        .filter(item => item.user === username)
         .map(item => item["textTODO"])
     );
 }
@@ -132,9 +135,9 @@ function showTodosSortedByUser(){
     const copy = todos.slice();
     console.log(copy
         .sort((a, b) => {
-            if (a.username < b.username)
+            if (a.user < b.user)
                 return -1;
-            if (a.username > b.username)
+            if (a.user > b.user)
                 return 1;
             return 0;
         })
