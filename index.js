@@ -88,20 +88,6 @@ function processCommand(command) {
             console.log('wrong command');
             break;
     }
-    // switch (command) {
-    //     case 'exit':
-    //         process.exit(0);
-    //         break;
-    //     case 'show':
-    //         showAllTodos();
-    //         break;
-    //     case 'important':
-    //         showImportantTodos();
-    //         break;
-    //     default:
-    //         console.log('wrong command');
-    //         break;
-
 }
 
 function showAllTodos(){
@@ -118,7 +104,7 @@ function showImportantTodos(){
 
 function showTodosByUsername(username){
     console.log(todos
-        .filter(item => item.username === username)
+        .filter(item => item.user == username)
         .map(item => item["textTODO"])
     );
 }
@@ -132,9 +118,9 @@ function showTodosSortedByImportance(){
     const copy = todos.slice();
     console.log(copy
         .sort((a, b) => {
-            if (a.importance > b.importance)
+            if (a.important > b.important)
                 return -1;
-            if (a.importance < b.importance)
+            if (a.important < b.important)
                 return 1;
             return 0;
         })
@@ -151,7 +137,7 @@ function showTodosSortedByUser(){
                 return 1;
             return 0;
         })
-        .map(item => item.text));
+        .map(item => item["textTODO"]));
 }
 
 function showTodosSortedByDate(){
