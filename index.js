@@ -33,7 +33,7 @@ function parseFile(files) {
                     item = {
                         "text": line,
                         "important":  /!/.test(line),
-                        "user": undefined,
+                        "user": '',
                         "date" : undefined,
                     }
                 }
@@ -130,20 +130,42 @@ function formatDate (date) {
 function showTodosSortedByImportance(){
     const copy = todos.slice();
     console.log(copy
-        .sort((a, b) => a.importance > b.importance)
+        .sort((a, b) => {
+            if (a.importance > b.importance)
+                return -1;
+            if (a.importance < b.importance)
+                return 1;
+            return 0;
+        })
         .map(item => item.text));
 }
 
 function showTodosSortedByUser(){
     const copy = todos.slice();
     console.log(copy
-        .sort((a, b) => a.username < b.username)
+        .sort((a, b) => {
+            if (a.username < b.username)
+                return -1;
+            if (a.username > b.username)
+                return 1;
+            return 0;
+        })
         .map(item => item.text));
 }
 
 function showTodosSortedByDate(){
     const copy = todos.slice();
     console.log(copy
-        .sort((a, b) => a.date < b.date)
+        .sort((a, b) => {
+            if (b.date === undefined)
+                return -1;
+            if(a.date === undefined)
+                return 1;
+            if (a.date < b.date)
+                return -1;
+            if (a.date > b.date)
+                return 1;
+            return 0;
+        })  
         .map(item => item.text));
 }
