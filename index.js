@@ -2,7 +2,7 @@ const {getAllFilePathsWithExtension, readFile} = require('./fileSystem');
 const {readLine} = require('./console');
 
 const files = getFiles();
-
+const todos = [];
 console.log('Please, write your command!');
 readLine(processCommand);
 
@@ -11,33 +11,40 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
-const todoExpr = new RegExp('// TODO.*', 'g')
+const todoExpr = new RegExp('.;?// TODO.*', 'g')
 
-const metaExpr = /TODO (.*); (.*); (.*)/
+const metaExpr = new RegExp('.;?// TODO (.+); (.+); (.+)', 'g')
 function parseFile(files) {
     for (let cFile of files){
         cFile = cFile.split("\n");
         for (let line of cFile){
+
             let item = {}
-            if (line.match(todoExpr, )) {
+            if (line.match(todoExpr)) {
                 if (line.match(metaExpr)) {
-                    const {name, date, text } = line.match(todoExpr);
+                    let lineParse = line.split(";")
+                    let name = lineParse[1].split(" ")[3];
+                    let date = lineParse[2];
+                    let text = lineParse.slice(3).join(';')
+
+                    let countExclamationMark = (text.match(/!/g) || []).length
                     item = {
                         "text": text,
-                        "important":  (text.match(/!/g) || []).length,
+                        "important": countExclamationMark ,
                         "user": name,
                         "date" : formatDate(date),
                     }
                 }
                 else {
                     item = {
-                        "text": line,
+                        "text": line.split("// TODO")[1],
                         "important":  /!/.test(line),
                         "user": undefined,
                         "date" : undefined,
                     }
                 }
                 todos.push(item)
+
             }
         }
     }
@@ -96,7 +103,7 @@ function processCommand(command) {
     //     default:
     //         console.log('wrong command');
     //         break;
-    // }
+    }
 }
 
 function showAllTodos(){
@@ -120,10 +127,6 @@ function showTodosByUsername(username){
 // TODO you can do it!
 
 function formatDate (date) {
-    const [day, month, year]= [date.getDate(), date.getMonth() + 1, date.getFullYear()];
-
-    const dayFormat = String(day).padStart(2, '0')
-    const monthFormat = String(month).padStart(2, '0')
-
-    return `${dayFormat}-${monthFormat}-${year}`;
+    const date_split = date.split('-');
+    return new Date(date_split[0], date_split[1] - 1, date_split[2]);
 }
