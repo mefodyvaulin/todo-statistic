@@ -39,7 +39,7 @@ function parseFile(files) {
                     item = {
                         "text": line.split("// TODO")[1],
                         "important":  /!/.test(line),
-                        "user": undefined,
+                        "user": '',
                         "date" : undefined,
                     }
                 }
@@ -124,9 +124,50 @@ function showTodosByUsername(username){
     );
 }
 
-// TODO you can do it!
-
 function formatDate (date) {
     const date_split = date.split('-');
     return new Date(date_split[0], date_split[1] - 1, date_split[2]);
+}
+
+function showTodosSortedByImportance(){
+    const copy = todos.slice();
+    console.log(copy
+        .sort((a, b) => {
+            if (a.importance > b.importance)
+                return -1;
+            if (a.importance < b.importance)
+                return 1;
+            return 0;
+        })
+        .map(item => item.text));
+}
+
+function showTodosSortedByUser(){
+    const copy = todos.slice();
+    console.log(copy
+        .sort((a, b) => {
+            if (a.username < b.username)
+                return -1;
+            if (a.username > b.username)
+                return 1;
+            return 0;
+        })
+        .map(item => item.text));
+}
+
+function showTodosSortedByDate(){
+    const copy = todos.slice();
+    console.log(copy
+        .sort((a, b) => {
+            if (b.date === undefined)
+                return -1;
+            if(a.date === undefined)
+                return 1;
+            if (a.date < b.date)
+                return -1;
+            if (a.date > b.date)
+                return 1;
+            return 0;
+        })
+        .map(item => item.text));
 }
