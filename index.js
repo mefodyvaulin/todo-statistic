@@ -29,7 +29,7 @@ function parseFile(files) {
 
                     let countExclamationMark = (text.match(/!/g) || []).length
                     item = {
-                        "text": text,
+                        "textTODO": text,
                         "important": countExclamationMark ,
                         "user": name,
                         "date" : formatDate(date),
@@ -37,7 +37,7 @@ function parseFile(files) {
                 }
                 else {
                     item = {
-                        "text": line.split("// TODO")[1],
+                        "textTODO": line.split("// TODO")[1],
                         "important":  /!/.test(line),
                         "user": '',
                         "date" : undefined,
@@ -53,8 +53,6 @@ function parseFile(files) {
 
 function processCommand(command) {
     parseFile(files);
-    switch (command) {
-        case 'exit':
     switch (true){
         case /exit/.test(command):
             process.exit(0);
@@ -103,24 +101,25 @@ function processCommand(command) {
     //     default:
     //         console.log('wrong command');
     //         break;
-    }
+
 }
 
 function showAllTodos(){
-    console.log(todos.map(item => item.text));
+
+    console.log(todos.map(item => item["textTODO"]));
 }
 
 function showImportantTodos(){
     console.log(todos
         .filter(item => item.important > 0)
-        .map(item => item.text)
+        .map(item => item["textTODO"])
     );
 }
 
 function showTodosByUsername(username){
     console.log(todos
         .filter(item => item.username === username)
-        .map(item => item.text)
+        .map(item => item["textTODO"])
     );
 }
 
@@ -139,7 +138,7 @@ function showTodosSortedByImportance(){
                 return 1;
             return 0;
         })
-        .map(item => item.text));
+        .map(item => item["textTODO"]));
 }
 
 function showTodosSortedByUser(){
@@ -169,5 +168,5 @@ function showTodosSortedByDate(){
                 return 1;
             return 0;
         })
-        .map(item => item.text));
+        .map(item => item["textTODO"]));
 }
